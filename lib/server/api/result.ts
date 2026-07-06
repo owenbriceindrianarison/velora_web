@@ -1,11 +1,20 @@
 export type ApiErrorCode =
-  | "INVALID_CREDENTIALS"
+  // Domain (auth-service)
+  | "INVALID_EMAIL"
+  | "WEAK_PASSWORD"
+  // Application (auth-service)
   | "EMAIL_TAKEN"
+  | "INVALID_CREDENTIALS"
+  | "SESSION_NOT_FOUND"
+  // Gateway structural validation
+  | "EMAIL_REQUIRED"
+  | "EMAIL_INVALID"
+  | "PASSWORD_REQUIRED"
+  | "REFRESH_TOKEN_REQUIRED"
+  // HTTP-level / network
   | "UNAUTHORIZED"
-  | "REFRESH_REUSED"
   | "FORBIDDEN"
   | "NOT_FOUND"
-  | "VALIDATION"
   | "RATE_LIMITED"
   | "NETWORK"
   | "UNKNOWN"

@@ -4,6 +4,7 @@
   "service": "web",
   "workspaceFolder": "/app",
   "overrideCommand": false,
+  "postCreateCommand": "pnpm install",
   "forwardPorts": [3000],
   "customizations": {
     "vscode": {

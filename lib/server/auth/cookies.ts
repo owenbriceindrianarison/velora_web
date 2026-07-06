@@ -2,8 +2,11 @@ import "server-only"
 
 import type { TokenPair } from "@/lib/server/api"
 
-export const ACCESS_COOKIE = process.env.COOKIE_ACCESS_NAME ?? "velora_at"
-export const REFRESH_COOKIE = process.env.COOKIE_REFRESH_NAME ?? "velora_rt"
+// export const ACCESS_COOKIE = process.env.COOKIE_ACCESS_NAME ?? "access_token"
+// export const REFRESH_COOKIE = process.env.COOKIE_REFRESH_NAME ?? "refresh_token"
+
+export const ACCESS_COOKIE = "access_token"
+export const REFRESH_COOKIE = "refresh_token"
 
 const REFRESH_MAX_AGE = 60 * 60 * 24 * 30
 
@@ -33,7 +36,7 @@ export function setSessionCookies(store: CookieWriter, pair: TokenPair): void {
   })
 }
 
-export function clearSession(store: CookieWriter): void {
+export function clearSessionCookies(store: CookieWriter): void {
   store.set(ACCESS_COOKIE, "", { ...base, maxAge: 0 })
   store.set(REFRESH_COOKIE, "", { ...base, maxAge: 0 })
 }

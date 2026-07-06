@@ -13,27 +13,28 @@ interface RequestOptions {
   searchParams?: Record<string, string | number | undefined>
 }
 
+const KNOWN_CODES = new Set<ApiErrorCode>([
+  "INVALID_EMAIL", "WEAK_PASSWORD",
+  "EMAIL_TAKEN", "INVALID_CREDENTIALS", "SESSION_NOT_FOUND",
+  "EMAIL_REQUIRED", "EMAIL_INVALID", "PASSWORD_REQUIRED", "REFRESH_TOKEN_REQUIRED",
+  "UNAUTHORIZED", "FORBIDDEN", "NOT_FOUND", "RATE_LIMITED",
+  "NETWORK", "UNKNOWN",
+])
+
 function mapErrorCode(raw: string | undefined, status: number): ApiErrorCode {
-  switch (raw) {
-    case "INVALID_CREDENTIALS":
-    case "EMAIL_TAKEN":
-    case "REFRESH_REUSED":
-    case "VALIDATION":
-      return raw
-    default:
-      if (status === 401) return "UNAUTHORIZED"
-      if (status === 403) return "FORBIDDEN"
-      if (status === 404) return "NOT_FOUND"
-      if (status === 429) return "RATE_LIMITED"
-      return "UNKNOWN"
-  }
+  if (raw && KNOWN_CODES.has(raw as ApiErrorCode)) return raw as ApiErrorCode
+  if (status === 401) return "UNAUTHORIZED"
+  if (status === 403) return "FORBIDDEN"
+  if (status === 404) return "NOT_FOUND"
+  if (status === 429) return "RATE_LIMITED"
+  return "UNKNOWN"
 }
 
 export async function request<T>(
   path: string,
   opts: RequestOptions = {}
 ): Promise<ApiResult<T>> {
-  const url = new URL(path, GATEWAY_URL)
+  const url = new URL(`${GATEWAY_URL}${path}`)
   for (const [k, v] of Object.entries(opts.searchParams ?? {})) {
     if (v != undefined) url.searchParams.set(k, String(v))
   }
@@ -79,11 +80,11 @@ export async function request<T>(
   }
 
   if (!res.ok) {
-    const err = (payload as { error?: { code?: string; message?: string } })
-      .error
+    // Backend shape: { error: "human message", code: "MACHINE_CODE" }
+    const typed = payload as { error?: string; code?: string }
     return Err({
-      code: mapErrorCode(err?.code, res.status),
-      message: err?.message ?? "Error ${res.status}",
+      code: mapErrorCode(typed.code, res.status),
+      message: typed.error ?? `Error ${res.status}`,
       status: res.status,
     })
   }
