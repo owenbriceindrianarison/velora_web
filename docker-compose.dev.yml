@@ -12,5 +12,7 @@ services:
     environment:
       - GATEWAY_URL=http://host.docker.internal:8080/v1
       - WATCHPACK_POLLING=true
+      - WATCHPACK_POLLING_INTERVAL=2000
+      - NODE_OPTIONS=--max-old-space-size=512
     extra_hosts:
       - "host.docker.internal:host-gateway"

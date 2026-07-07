@@ -9,6 +9,10 @@ export interface User {
   user_id: string
 }
 
+export interface SessionUser {
+  id: string
+}
+
 export interface LoginInput {
   email: string
   password: string
